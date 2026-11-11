@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIRNOVA | Smart Bus AirPurifier System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #07111f;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* --- 5-SECOND CINEMATIC INTRO OVERLAY --- */
+    #intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #0d2342 0%, #07111f 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeOutIntro 0.8s ease 4.2s forwards;
+    }
+
+    .intro-content {
+      text-align: center;
+    }
+
+    .intro-logo {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: #32a8ff;
+      text-shadow: 0 0 20px rgba(50, 168, 255, 0.6);
+      animation: pulseLogo 1.5s infinite alternate;
+    }
+
+    .intro-subtitle {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #9fb3c8;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .intro-loader {
+      width: 200px;
+      height: 4px;
+      background: #102438;
+      border-radius: 4px;
+      margin-top: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .intro-loader-bar {
+      width: 0%;
+      height: 100%;
+      background: #39e58c;
+      animation: loadBar 5s linear forwards;
+    }
+
+    @keyframes pulseLogo {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 35px rgba(50, 168, 255, 0.9); }
+    }
+
+    @keyframes loadBar {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes fadeOutIntro {
+      0% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* --- MAIN DASHBOARD STYLES --- */
+    header {
+      padding: 22px;
+      text-align: center;
+      background: #0d1b2a;
+      border-bottom: 1px solid #26384d;
+    }
+
+    header h1 {
+      font-size: 28px;
+      letter-spacing: 1px;
+      color: #32a8ff;
+    }
+
+    header p {
+      margin-top: 6px;
+      color: #9fb3c8;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .connection {
+      background: #102438;
+      padding: 15px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #20374d;
+    }
+
+    .online {
+      color: #39e58c;
+      font-weight: bold;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .card {
+      background: #102438;
+      border: 1px solid #20374d;
+      border-radius: 18px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .icon {
+      font-size: 35px;
+    }
+
+    .title {
+      color: #9fb3c8;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .value {
+      font-size: 27px;
+      font-weight: bold;
+      margin-top: 8px;
+      color: #ffffff;
+    }
+
+    .status {
+      margin-top: 20px;
+      background: #102438;
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid #20374d;
+    }
+
+    .status h2 {
+      margin-bottom: 15px;
+      font-size: 18px;
+      color: #32a8ff;
+    }
+
+    .fanbar {
+      height: 15px;
+      background: #25394d;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #fanProgress {
+      height: 100%;
+      width: 75%;
+      background: #32a8ff;
+      transition: 0.5s;
+    }
+
+    /* --- MOVING MEMBER CREDITS FOOTER --- */
+    footer {
+      background: #0d1b2a;
+      border-top: 1px solid #26384d;
+      padding: 20px 0;
+      margin-top: 40px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .footer-content {
+      text-align: center;
+      color: #71859a;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      background: #07111f;
+      padding: 10px 0;
+      border-top: 1px dashed #20374d;
+      border-bottom: 1px dashed #20374d;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      animation: scrollMarquee 15s linear infinite;
+      color: #39e58c;
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    @keyframes scrollMarquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- CINEMATIC AI INTRO SCREEN (Auto-hides in 5 seconds) -->
+  <div id="intro-screen">
+    <div class="intro-content">
+      <div class="intro-logo">AIRNOVA AI</div>
+      <div class="intro-subtitle">Smart Bus AirPurifier System initializing...</div>
+      <div class="intro-loader">
+        <div class="intro-loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD -->
+  <header>
+    <h1>AIRNOVA</h1>
+    <p>Smart Bus AirPurifier Monitoring System</p>
+  </header>
+
+  <div class="container">
+    <div class="connection">
+      <span>ESP32 Telemetry Connection</span>
+      <span id="connection" class="online">● ONLINE (SIMULATED)</span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="icon">🌡️</div>
+        <div class="title">Temperature</div>
+        <div class="value" id="temperature">26.5 °C</div>
+      </div>
+
+      <div class="card">
+        <div class="icon">💧</div>
+        <div class="title">Humidity</div>
+        <div class="value" id="humidity">58 %</div>
+      </div>
+
+      <div class="card">
+        <div class="icon">🌫️</div>
+        <div class="title">PM2.5</div>
+        <div class="value" id="pm25">12.4 µg/m³</div>
+      </div>
+
+      <div class="card">
+        <div class="icon">🌪️</div>
+        <div class="title">PM10</div>
+        <div class="value" id="pm10">25.1 µg/m³</div>
+      </div>
+
+      <div class="card">
+        <div class="icon">🫁</div>
+        <div class="title">Air Quality</div>
+        <div class="value" id="airQuality" style="color: #39e58c;">Good</div>
+      </div>
+
+      <div class="card">
+        <div class="icon">🌀</div>
+        <div class="title">Fan Status</div>
+        <div class="value" id="fanStatus">ON</div>
+      </div>
+    </div>
+
+    <div class="status">
+      <h2>🌀 Fan Speed Modulation</h2>
+      <div class="value">
+        <span id="fanSpeed">75</span>%
+      </div>
+      <br>
+      <div class="fanbar">
+        <div id="fanProgress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER WITH MOVING TEAM MEMBERS -->
+  <footer>
+    <div class="marquee-container">
+      <div class="marquee-text">
+        🚀 DEVELOPED WITH EXCELLENCE BY: &nbsp;&nbsp; **SHIVRAJ CHANNEWAR** &nbsp;&nbsp; &bull; &nbsp;&nbsp; **SHOURYA CHAVAN** &nbsp;&nbsp; | &nbsp;&nbsp; AIRNOVA SMART BUS AIRPURIFIER SYSTEM © 2026 🚀
+      </div>
+    </div>
+    <div class="footer-content" style="margin-top: 15px;">
+      AIRNOVA IoT Embedded Solutions &bull; All Rights Reserved
+    </div>
+  </footer>
+
+  <script>
+    // Automatically hide intro screen after 5 seconds and start telemetry updates
+    setTimeout(() => {
+      const intro = document.getElementById('intro-screen');
+      if (intro) {
+        intro.style.display = 'none';
+      }
+    }, 5000);
+
+    // Simulated sensor refresh loop
+    function updateSensorSimulation() {
+      const temp = (25 + Math.random() * 3).toFixed(1);
+      const hum = (55 + Math.random() * 8).toFixed(0);
+      const pm25 = (10 + Math.random() * 5).toFixed(1);
+      const pm10 = (22 + Math.random() * 6).toFixed(1);
+
+      document.getElementById("temperature").innerText = temp + " °C";
+      document.getElementById("humidity").innerText = hum + " %";
+      document.getElementById("pm25").innerText = pm25 + " µg/m³";
+      document.getElementById("pm10").innerText = pm10 + " µg/m³";
+    }
+
+    setInterval(updateSensorSimulation, 3000);
+  </script>
+
+</body>
+</html>
